@@ -1,5 +1,4 @@
 # Go build artifacts
-api
 *.exe
 *.exe~
 *.dll
