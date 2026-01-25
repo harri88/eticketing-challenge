@@ -1,0 +1,183 @@
+--- EXISTING STYLES ---
+.container { max-width: 500px; margin: 40px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; font-family: sans-serif; }
+.grid-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; align-items: center; margin-bottom: 10px; }
+.ticket-actions { display: flex; gap: 5px; align-items: center; }
+.summary-section { margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; text-align: right; }
+.btn-primary { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+.btn-primary:disabled { background: #ccc; }
+
+/* --- NEW CHECKOUT STYLES --- */
+.btn-back { background: none; border: none; color: #666; cursor: pointer; margin-bottom: 10px; font-size: 0.9rem; }
+.order-summary-box { background: #f8f9fa; padding: 15px; border-radius: 6px; display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; }
+.total-highlight { color: #007bff; font-size: 1.2rem; }
+
+/* Payment Tabs */
+.payment-tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #eee; }
+.payment-tabs button { flex: 1; padding: 10px; border: none; background: none; cursor: pointer; font-weight: bold; color: #888; border-bottom: 2px solid transparent; }
+.payment-tabs button.active { color: #007bff; border-bottom-color: #007bff; }
+
+/* Forms */
+.cc-form { display: flex; flex-direction: column; gap: 10px; }
+.cc-form input { padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+.cc-row { display: flex; gap: 10px; }
+.cc-row input { flex: 1; }
+.btn-pay { background: #28a745; color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+
+/* QR Section */
+.qr-section { text-align: center; padding: 20px; }
+.qr-placeholder img { border: 1px solid #ddd; padding: 10px; border-radius: 8px; }
+.timer-box { background: #fff3cd; color: #856404; padding: 10px; margin-top: 10px; border-radius: 4px; display: inline-block; }
+.hint { font-size: 0.8rem; color: #999; margin-top: 5px; }
+
+/* Success Page */
+.success-container { text-align: center; }
+.success-icon { font-size: 50px; color: #28a745; margin-bottom: 10px; }
+.receipt-details { background: #f9f9f9; padding: 15px; text-align: left; margin: 20px 0; border-radius: 6px; }
+.receipt-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
+.processing-state { text-align: center; padding: 40px; font-weight: bold; color: #555; }
+
+
+/* --- THANK YOU PAGE STYLES --- */
+
+.thank-you-container {
+  max-width: 500px;
+  background-color: #fcfcfc;
+  text-align: center;
+}
+
+.success-header {
+  margin-bottom: 30px;
+}
+
+.checkmark-circle {
+  width: 60px;
+  height: 60px;
+  background-color: #28a745;
+  border-radius: 50%;
+  margin: 0 auto 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.checkmark {
+  color: white;
+  font-size: 30px;
+}
+
+.sub-text {
+  font-size: 1.1rem;
+  color: #333;
+  margin: 5px 0;
+}
+
+.email-text {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Receipt Card Look */
+.receipt-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 25px;
+  position: relative;
+}
+
+/* Jagged edge effect (Optional cool visual) */
+.receipt-card::after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  background: 
+    linear-gradient(45deg, transparent 33.333%, #fff 33.333%, #fff 66.667%, transparent 66.667%),
+    linear-gradient(-45deg, transparent 33.333%, #fff 33.333%, #fff 66.667%, transparent 66.667%);
+  background-size: 20px 20px;
+}
+
+.ticket-list {
+  margin-bottom: 15px;
+}
+
+.ticket-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+}
+
+.ticket-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qty-badge {
+  background: #eee;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.divider {
+  border-top: 2px dashed #eee;
+  margin: 15px 0;
+}
+
+.transaction-details {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.mono-text {
+  font-family: 'Courier New', monospace;
+  letter-spacing: -0.5px;
+}
+
+.total-row-final {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Buttons */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-secondary {
+  background: white;
+  border: 1px solid #ccc;
+  color: #333;
+  padding: 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #f0f0f0;
+  border-color: #bbb;
+}

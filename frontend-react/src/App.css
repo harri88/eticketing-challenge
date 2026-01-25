@@ -1,0 +1,424 @@
+/* Basic Layout */
+.app-wrapper { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; background: linear-gradient(135deg, #f4f7f6 0%, #e8f2f1 100%); min-height: 100vh; display: flex; justify-content: center; padding: 20px; }
+.page-container { width: 100%; max-width: 600px; }
+
+/* ===== TICKET SELECTION PAGE ===== */
+.app-header { text-align: center; margin-bottom: 40px; padding-top: 20px; animation: slideDown 0.6s ease-out; }
+.app-header h1 { font-size: 2.5em; color: #0f3460; margin-bottom: 8px; font-weight: 700; letter-spacing: -0.5px; }
+.app-header p { font-size: 1.1em; color: #6b7280; font-weight: 500; }
+
+.ticket-cards-container { margin-bottom: 100px; animation: fadeIn 0.5s ease-out; }
+
+/* Ticket Card Styling */
+.ticket-card { 
+  background: white; 
+  padding: 22px; 
+  margin-bottom: 16px; 
+  border-radius: 14px; 
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08); 
+  display: flex; 
+  flex-direction: column; 
+  gap: 12px; 
+  border: 2px solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.ticket-card:hover { 
+  transform: translateY(-4px); 
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  border-color: #e5e7eb;
+}
+
+.ticket-card.selected { 
+  border-color: #3b82f6; 
+  background: linear-gradient(135deg, #f0f9ff 0%, #f8fbff 100%);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
+}
+
+.card-top { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.card-top h3 { 
+  font-size: 1.3em; 
+  color: #0f3460; 
+  margin: 0; 
+  font-weight: 600;
+  flex: 1;
+}
+
+.price-tag { 
+  font-weight: 700; 
+  color: #10b981; 
+  font-size: 1.25em; 
+  background: #ecfdf5;
+  padding: 6px 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.ticket-desc { 
+  color: #6b7280; 
+  font-size: 0.95em; 
+  margin: 0;
+  line-height: 1.5;
+}
+
+.quota-badge { 
+  display: inline-block;
+  background: #fef3c7; 
+  color: #92400e; 
+  padding: 6px 12px; 
+  border-radius: 8px; 
+  font-size: 0.85em;
+  font-weight: 600;
+  width: fit-content;
+}
+
+/* Ticket Controls */
+.ticket-controls { 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+  margin-top: 8px; 
+  justify-content: flex-end;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.ctrl-btn { 
+  width: 36px; 
+  height: 36px; 
+  border-radius: 50%; 
+  border: 2px solid #e5e7eb; 
+  background: white; 
+  cursor: pointer;
+  font-size: 1.2em;
+  color: #0f3460;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ctrl-btn:hover:not(:disabled) { 
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: #f0f9ff;
+  transform: scale(1.05);
+}
+
+.ctrl-btn:disabled { 
+  opacity: 0.4; 
+  cursor: not-allowed;
+}
+
+.qty-display { 
+  font-weight: 700; 
+  font-size: 1.3em; 
+  min-width: 30px; 
+  text-align: center;
+  color: #0f3460;
+}
+
+/* Bottom Bar - Sticky */
+.bottom-bar { 
+  position: fixed; 
+  bottom: 0; 
+  left: 0; 
+  right: 0; 
+  background: white; 
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+  box-shadow: 0 -8px 25px rgba(0,0,0,0.12); 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  max-width: 600px; 
+  margin: 0 auto; 
+  width: 100%;
+  z-index: 100;
+}
+
+.total-display { 
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.total-display span { 
+  font-size: 0.85em;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.total-display strong { 
+  font-size: 1.5em;
+  color: #10b981;
+  font-weight: 700;
+}
+
+/* Button Styling */
+.btn-primary { 
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white; 
+  border: none; 
+  padding: 12px 28px; 
+  border-radius: 10px; 
+  font-weight: 600; 
+  font-size: 0.95rem; 
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) { 
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled { 
+  background: #d1d5db;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Summary Page */
+.summary-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+.summary-row { display: flex; justify-content: space-between; margin-bottom: 15px; }
+.divider { height: 1px; background: #eee; margin: 20px 0; }
+.total-row-large { display: flex; justify-content: space-between; font-size: 1.5em; font-weight: bold; color: #333; }
+.input-group { margin: 25px 0; }
+.input-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #555; }
+.email-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+.full-width { width: 100%; }
+
+/* Payment Tabs */
+.tabs { display: flex; margin-bottom: 20px; background: #eee; padding: 5px; border-radius: 8px; }
+.tab { flex: 1; padding: 10px; border: none; background: transparent; cursor: pointer; border-radius: 6px; font-weight: 600; }
+.tab.active { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #3b82f6; }
+.input-field { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px; }
+
+/* Payment Card */
+.payment-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+.order-badge { display: inline-block; background: #f3f4f6; color: #6b7280; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; margin-bottom: 15px; }
+
+/* Amount Due Section */
+.amount-due { background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #10b981; }
+.amount-due span { color: #6b7280; font-weight: 500; }
+.amount-value { font-size: 1.8em; color: #10b981; font-weight: 700; }
+
+/* Credit Card Form */
+.cc-form { display: flex; flex-direction: column; gap: 12px; }
+.row { display: flex; gap: 12px; }
+.row .input-field { flex: 1; }
+
+/* QR Payment */
+.qr-box { text-align: center; padding: 20px; }
+.qr-image-placeholder { margin: 20px 0; }
+.qr-image-placeholder img { width: 150px; height: 150px; border-radius: 8px; }
+.timer-pill { display: inline-block; background: #fef08a; color: #92400e; padding: 8px 16px; border-radius: 20px; font-weight: 600; margin-top: 15px; }
+
+/* --- Thank You Page Styles --- */
+
+.thank-you-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  overflow: hidden;
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+.success-header {
+  background: linear-gradient(180deg, #ecfdf5 0%, #fff 100%);
+  padding: 40px 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.success-title {
+  color: #065f46;
+  margin: 15px 0 5px 0;
+  font-size: 1.8rem;
+}
+
+.success-subtitle {
+  color: #6b7280;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.receipt-body {
+  padding: 0 30px;
+  text-align: left;
+}
+
+.receipt-body h3 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #9ca3af;
+  margin-bottom: 15px;
+}
+
+/* Typography Helpers */
+.qty-badge {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  margin-right: 10px;
+}
+
+.dashed-divider {
+  border-top: 2px dashed #e5e7eb;
+  margin: 20px 0;
+}
+
+.total-divider {
+  border-top: 1px solid #e5e7eb;
+  margin: 20px 0 15px 0;
+}
+
+.meta-info {
+  background: #f9fafb;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.meta-row:last-child {
+  margin-bottom: 0;
+}
+
+.label { color: #6b7280; }
+.value { font-weight: 500; color: #111; }
+.value.mono { font-family: 'Courier New', monospace; letter-spacing: -0.5px; }
+
+.success-color { color: #10b981; }
+
+.card-footer {
+  padding: 20px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* --- Checkmark Animation --- */
+.checkmark-wrapper {
+  width: 80px;
+  height: 80px;
+}
+
+.checkmark {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 2;
+  stroke: #10b981; /* Green */
+  stroke-miterlimit: 10;
+  box-shadow: inset 0px 0px 0px #10b981;
+  animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+}
+
+.checkmark-circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #10b981;
+  fill: none;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark-check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+  100% { stroke-dashoffset: 0; }
+}
+@keyframes scale {
+  0%, 100% { transform: none; }
+  50% { transform: scale3d(1.1, 1.1, 1); }
+}
+
+/* --- Back Button Style --- */
+.btn-text-back {
+  background: transparent;     /* No background color */
+  border: none;                /* No border */
+  color: #6b7280;              /* Muted gray text */
+  font-size: 0.95rem;          
+  font-weight: 600;
+  cursor: pointer;
+  
+  /* Layout & Spacing */
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;                    /* Space between the arrow and text */
+  padding: 8px 0;              /* Adds a little clickable area vertically */
+  margin-bottom: 15px;         /* Pushes the content below it down */
+  
+  /* Smooth Animation */
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+/* Hover Effect */
+.btn-text-back:hover {
+  color: #111827;              /* Darker black/gray on hover */
+  transform: translateX(-4px); /* Moves slightly left for a dynamic feel */
+}
+
+/* Focus State (Accessibility) */
+.btn-text-back:focus {
+  outline: none;
+  text-decoration: underline;
+}
