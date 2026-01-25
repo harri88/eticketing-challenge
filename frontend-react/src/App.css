@@ -247,6 +247,33 @@
 .row { display: flex; gap: 12px; }
 .row .input-field { flex: 1; }
 
+.input-field:disabled {
+  background: #f3f4f6;
+  cursor: not-allowed;
+  color: #9ca3af;
+}
+
+.spinner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.spinner::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 /* QR Payment */
 .qr-box { text-align: center; padding: 20px; }
 .qr-image-placeholder { margin: 20px 0; }

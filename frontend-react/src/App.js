@@ -56,6 +56,36 @@ const apiService = {
       alert("Error connecting to API. Is the backend running on port 5020?");
       return null;
     }
+  },
+  processPayment: async (orderId, amount, paymentMethod, cardDetails) => {
+    try {
+      const payload = {
+        order_id: orderId,
+        amount: amount,
+        payment_method: paymentMethod,
+        card_number: cardDetails?.cardNumber || '',
+        card_expiry: cardDetails?.cardExpiry || '',
+        card_cvc: cardDetails?.cardCvc || ''
+      };
+
+      const response = await fetch('http://localhost:8081/api/v1/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log("Payment Response:", result);
+      return result.data || result; // Handle both wrapped and unwrapped responses
+    } catch (error) { 
+      console.error("Could not process payment:", error);
+      alert("Error connecting to Payment API. Is the backend running on port 8081?");
+      return null;
+    }
   }
 };
 
@@ -215,7 +245,12 @@ const OrderSummaryPage = ({ cart, tickets, total, onCreateOrder, onBack }) => {
 const PaymentPage = ({ total, orderId, onPaymentSuccess }) => {
   const [method, setMethod] = useState('cc');
   const [qrTimer, setQrTimer] = useState(8);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCvc, setCardCvc] = useState('');
 
+  // Handle QR payment timer
   useEffect(() => {
     let interval;
     if (method === 'qr') {
@@ -224,7 +259,7 @@ const PaymentPage = ({ total, orderId, onPaymentSuccess }) => {
         setQrTimer((prev) => {
           if (prev <= 1) {
             clearInterval(interval);
-            onPaymentSuccess(generateReceipt());
+            handleQRPayment();
             return 0;
           }
           return prev - 1;
@@ -232,7 +267,62 @@ const PaymentPage = ({ total, orderId, onPaymentSuccess }) => {
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [method, onPaymentSuccess]);
+  }, [method]);
+
+  // Process credit card payment
+  const handleCreditCardPayment = async (e) => {
+    e.preventDefault();
+    setIsProcessing(true);
+
+    const cardDetails = {
+      cardNumber: cardNumber.replace(/\s/g, ''),
+      cardExpiry: cardExpiry,
+      cardCvc: cardCvc
+    };
+
+    const response = await apiService.processPayment(
+      orderId,
+      total,
+      'credit_card',
+      cardDetails
+    );
+
+    if (response && response.transaction_id) {
+      onPaymentSuccess({
+        transactionId: response.transaction_id,
+        paymentRef: response.payment_ref || response.id,
+        timestamp: new Date().toLocaleString(),
+        ...response
+      });
+    } else {
+      alert("Payment failed. Please try again.");
+      setIsProcessing(false);
+    }
+  };
+
+  // Process QR payment
+  const handleQRPayment = async () => {
+    setIsProcessing(true);
+
+    const response = await apiService.processPayment(
+      orderId,
+      total,
+      'qr_scan',
+      {}
+    );
+
+    if (response && response.transaction_id) {
+      onPaymentSuccess({
+        transactionId: response.transaction_id,
+        paymentRef: response.payment_ref || response.id,
+        timestamp: new Date().toLocaleString(),
+        ...response
+      });
+    } else {
+      alert("QR Payment failed. Please try again.");
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <div className="page-container">
@@ -249,12 +339,14 @@ const PaymentPage = ({ total, orderId, onPaymentSuccess }) => {
           <button 
             className={`tab ${method === 'cc' ? 'active' : ''}`} 
             onClick={() => setMethod('cc')}
+            disabled={isProcessing}
           >
             💳 Credit Card
           </button>
           <button 
             className={`tab ${method === 'qr' ? 'active' : ''}`} 
             onClick={() => setMethod('qr')}
+            disabled={isProcessing}
           >
             📱 QR Scan
           </button>
@@ -262,13 +354,48 @@ const PaymentPage = ({ total, orderId, onPaymentSuccess }) => {
 
         <div className="payment-body">
           {method === 'cc' ? (
-            <form onSubmit={(e) => { e.preventDefault(); onPaymentSuccess(generateReceipt()); }} className="cc-form">
-              <input type="text" className="input-field" placeholder="Card Number (4242...)" required />
+            <form onSubmit={handleCreditCardPayment} className="cc-form">
+              <input 
+                type="text" 
+                className="input-field" 
+                placeholder="Card Number (e.g., 4242424242424242)" 
+                required 
+                value={cardNumber}
+                onChange={(e) => setCardNumber(e.target.value)}
+                disabled={isProcessing}
+              />
               <div className="row">
-                <input type="text" className="input-field" placeholder="MM/YY" required />
-                <input type="text" className="input-field" placeholder="CVC" required maxLength="3" />
+                <input 
+                  type="text" 
+                  className="input-field" 
+                  placeholder="MM/YY" 
+                  required 
+                  value={cardExpiry}
+                  onChange={(e) => setCardExpiry(e.target.value)}
+                  disabled={isProcessing}
+                />
+                <input 
+                  type="text" 
+                  className="input-field" 
+                  placeholder="CVC" 
+                  required 
+                  maxLength="3"
+                  value={cardCvc}
+                  onChange={(e) => setCardCvc(e.target.value)}
+                  disabled={isProcessing}
+                />
               </div>
-              <button type="submit" className="btn-primary full-width">Pay {total} AED</button>
+              <button 
+                type="submit" 
+                className="btn-primary full-width"
+                disabled={isProcessing}
+              >
+                {isProcessing ? (
+                  <span className="spinner">↻ Processing Payment...</span>
+                ) : (
+                  `Pay ${total} AED`
+                )}
+              </button>
             </form>
           ) : (
             <div className="qr-box">
@@ -276,7 +403,13 @@ const PaymentPage = ({ total, orderId, onPaymentSuccess }) => {
                 <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${orderId}`} alt="QR" />
               </div>
               <p>Please scan with your banking app</p>
-              <div className="timer-pill">Checking: {qrTimer}s</div>
+              <div className="timer-pill">
+                {isProcessing ? (
+                  <span>↻ Processing...</span>
+                ) : (
+                  `Checking: ${qrTimer}s`
+                )}
+              </div>
             </div>
           )}
         </div>

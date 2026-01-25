@@ -102,7 +102,7 @@ func Load() *Config {
 			Environment:     getEnv("ENVIRONMENT", "development"),
 		},
 		TicketService: TicketServiceConfig{
-			URL:     getEnv("TICKET_SERVICE_URL", "http://localhost:7175"),
+			URL:     getEnv("TICKET_SERVICE_URL", "http://localhost:5020"),
 			Timeout: getEnvInt("TICKET_SERVICE_TIMEOUT", 30),
 		},
 		PaymentGateway: PaymentGatewayConfig{

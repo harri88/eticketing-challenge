@@ -3,13 +3,39 @@ definitions:
   domain.PaymentRequest:
     properties:
       amount:
+        description: |-
+          Payment amount
+          required: true
+          minimum: 0.01
+          example: 250.50
         type: number
-      currency:
+      card_cvc:
+        description: |-
+          Credit card CVC (for credit_card method)
+          example: 123
+        type: string
+      card_expiry:
+        description: |-
+          Credit card expiry date MM/YY (for credit_card method)
+          example: 12/25
+        type: string
+      card_number:
+        description: |-
+          Credit card number (for credit_card method)
+          example: 4242424242424242
         type: string
       order_id:
+        description: |-
+          Order ID - unique identifier for the order
+          required: true
+          example: order-12345
         type: string
       payment_method:
-        description: credit_card, qr_scan, crypto
+        description: |-
+          Payment method - credit_card, qr_scan, or crypto
+          required: true
+          enum: credit_card,qr_scan,crypto
+          example: credit_card
         type: string
     required:
     - amount
@@ -19,24 +45,51 @@ definitions:
   domain.Transaction:
     properties:
       amount:
+        description: |-
+          Transaction amount
+          example: 250.50
         type: number
       created_at:
+        description: |-
+          Timestamp when transaction was created
+          example: 2026-01-25T10:30:00Z
         type: string
       currency:
+        description: |-
+          Currency code
+          example: AED
         type: string
       id:
+        description: |-
+          Database ID
+          example: 1
         type: integer
       order_id:
+        description: |-
+          Associated order ID
+          example: order-12345
         type: string
       payment_method:
+        description: |-
+          Payment method used
+          enum: credit_card,qr_scan,crypto
+          example: credit_card
         type: string
       payment_ref:
+        description: |-
+          External payment gateway reference
+          example: ch_1234567890
         type: string
       status:
-        description: PENDING, SUCCESS, FAILED
+        description: |-
+          Transaction status
+          enum: PENDING,SUCCESS,FAILED
+          example: SUCCESS
         type: string
       transaction_id:
-        description: e.g., TXN-CC-17000
+        description: |-
+          Unique transaction identifier
+          example: TXN-CC-17000
         type: string
     type: object
 host: localhost:8081

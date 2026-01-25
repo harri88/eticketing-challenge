@@ -84,16 +84,27 @@ const docTemplate = `{
             ],
             "properties": {
                 "amount": {
+                    "description": "Payment amount\nrequired: true\nminimum: 0.01\nexample: 250.50",
                     "type": "number"
                 },
-                "currency": {
+                "card_cvc": {
+                    "description": "Credit card CVC (for credit_card method)\nexample: 123",
+                    "type": "string"
+                },
+                "card_expiry": {
+                    "description": "Credit card expiry date MM/YY (for credit_card method)\nexample: 12/25",
+                    "type": "string"
+                },
+                "card_number": {
+                    "description": "Credit card number (for credit_card method)\nexample: 4242424242424242",
                     "type": "string"
                 },
                 "order_id": {
+                    "description": "Order ID - unique identifier for the order\nrequired: true\nexample: order-12345",
                     "type": "string"
                 },
                 "payment_method": {
-                    "description": "credit_card, qr_scan, crypto",
+                    "description": "Payment method - credit_card, qr_scan, or crypto\nrequired: true\nenum: credit_card,qr_scan,crypto\nexample: credit_card",
                     "type": "string"
                 }
             }
@@ -102,32 +113,39 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "amount": {
+                    "description": "Transaction amount\nexample: 250.50",
                     "type": "number"
                 },
                 "created_at": {
+                    "description": "Timestamp when transaction was created\nexample: 2026-01-25T10:30:00Z",
                     "type": "string"
                 },
                 "currency": {
+                    "description": "Currency code\nexample: AED",
                     "type": "string"
                 },
                 "id": {
+                    "description": "Database ID\nexample: 1",
                     "type": "integer"
                 },
                 "order_id": {
+                    "description": "Associated order ID\nexample: order-12345",
                     "type": "string"
                 },
                 "payment_method": {
+                    "description": "Payment method used\nenum: credit_card,qr_scan,crypto\nexample: credit_card",
                     "type": "string"
                 },
                 "payment_ref": {
+                    "description": "External payment gateway reference\nexample: ch_1234567890",
                     "type": "string"
                 },
                 "status": {
-                    "description": "PENDING, SUCCESS, FAILED",
+                    "description": "Transaction status\nenum: PENDING,SUCCESS,FAILED\nexample: SUCCESS",
                     "type": "string"
                 },
                 "transaction_id": {
-                    "description": "e.g., TXN-CC-17000",
+                    "description": "Unique transaction identifier\nexample: TXN-CC-17000",
                     "type": "string"
                 }
             }

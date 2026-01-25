@@ -11,7 +11,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data_ticket:/var/lib/postgresql/data
-      - ./init_ticket.sql:/docker-entrypoint-initdb.d/init_ticket.sql
+      - ./scripts/init_ticket.sql:/docker-entrypoint-initdb.d/init_ticket.sql
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -33,7 +33,7 @@ services:
       - "5433:5432" # Host port 5433 maps to container port 5432
     volumes:
       - postgres_data_payment:/var/lib/postgresql/data
-      - ./init_payment.sql:/docker-entrypoint-initdb.d/init_payment.sql
+      - ./scripts/init_payment.sql:/docker-entrypoint-initdb.d/init_payment.sql
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -55,7 +55,7 @@ services:
       - "5434:5432" # Host port 5434 maps to container port 5432
     volumes:
       - postgres_data_ledger:/var/lib/postgresql/data
-      - ./init_ledger.sql:/docker-entrypoint-initdb.d/init_ledger.sql
+      - ./scripts/init_ledger.sql:/docker-entrypoint-initdb.d/init_ledger.sql
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
