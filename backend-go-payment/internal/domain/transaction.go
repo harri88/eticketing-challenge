@@ -91,6 +91,9 @@ type TransactionRepository interface {
 	Create(ctx context.Context, tx *Transaction) error
 	UpdateStatus(ctx context.Context, id int64, status string, ref string) error
 	GetByOrderID(ctx context.Context, orderID string) (*Transaction, error)
+	GetByID(ctx context.Context, id int64) (*Transaction, error)
+	GetByTransactionID(ctx context.Context, transactionID string) (*Transaction, error)
+	GetAll(ctx context.Context) ([]Transaction, error)
 }
 
 // Gateway Interface (Strategy Pattern Port)

@@ -11,7 +11,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data_ticket:/var/lib/postgresql/data
-      - ./scripts/init_ticket.sql:/docker-entrypoint-initdb.d/init_ticket.sql
+      - ./sql_scripts/init_ticket.sql:/docker-entrypoint-initdb.d/init_ticket.sql
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -33,7 +33,7 @@ services:
       - "5433:5432" # Host port 5433 maps to container port 5432
     volumes:
       - postgres_data_payment:/var/lib/postgresql/data
-      - ./scripts/init_payment.sql:/docker-entrypoint-initdb.d/init_payment.sql
+      - ./sql_scripts/init_payment.sql:/docker-entrypoint-initdb.d/init_payment.sql
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -55,7 +55,7 @@ services:
       - "5434:5432" # Host port 5434 maps to container port 5432
     volumes:
       - postgres_data_ledger:/var/lib/postgresql/data
-      - ./scripts/init_ledger.sql:/docker-entrypoint-initdb.d/init_ledger.sql
+      - ./sql_scripts/init_ledger.sql:/docker-entrypoint-initdb.d/init_ledger.sql
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -65,7 +65,7 @@ services:
     networks:  # <--- ADDED THIS
       - ticketing-network
 
-  # --- Application Services ---
+  # # --- Application Services ---
 
   # backend-dotnet-tickets:
   #   build: ./backend-dotnet-tickets
@@ -112,6 +112,32 @@ services:
   #   environment:
   #     # CHANGED: Encoded the '@' in password to '%40' to avoid parsing errors
   #     DATABASE_URL: "postgresql://postgres:postgres%4012345@ledger-db:5432/ledger_db"
+  #   networks:
+  #     - ticketing-network
+
+  # # --- Frontend Services ---
+
+  # frontend-react:
+  #   build: ./frontend-react
+  #   container_name: frontend_react
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     REACT_APP_API_URL: http://backend-dotnet-tickets:8080
+  #   depends_on:
+  #     - backend-dotnet-tickets
+  #   networks:
+  #     - ticketing-network
+
+  # frontend-backoffice:
+  #   build: ./frontend-backoffice
+  #   container_name: frontend_backoffice
+  #   ports:
+  #     - "3001:3000"
+  #   environment:
+  #     REACT_APP_API_URL: http://backend-dotnet-tickets:8080
+  #   depends_on:
+  #     - backend-dotnet-tickets
   #   networks:
   #     - ticketing-network
 

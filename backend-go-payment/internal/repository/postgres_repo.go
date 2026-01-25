@@ -56,6 +56,88 @@ func (r *pgRepository) UpdateStatus(ctx context.Context, id int64, status string
 }
 
 func (r *pgRepository) GetByOrderID(ctx context.Context, orderID string) (*domain.Transaction, error) {
-	// Implementation omitted for brevity, standard SELECT...
-	return nil, nil
+	query := `
+		SELECT id, transaction_id, order_id, payment_method, payment_ref, amount, currency, status, created_at
+		FROM transactions
+		WHERE order_id = $1
+	`
+	var tx domain.Transaction
+	err := r.db.QueryRowContext(ctx, query, orderID).Scan(
+		&tx.ID, &tx.TransactionID, &tx.OrderID, &tx.PaymentMethod, &tx.PaymentRef,
+		&tx.Amount, &tx.Currency, &tx.Status, &tx.CreatedAt,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &tx, nil
+}
+
+func (r *pgRepository) GetByID(ctx context.Context, id int64) (*domain.Transaction, error) {
+	query := `
+		SELECT id, transaction_id, order_id, payment_method, payment_ref, amount, currency, status, created_at
+		FROM transactions
+		WHERE id = $1
+	`
+	var tx domain.Transaction
+	err := r.db.QueryRowContext(ctx, query, id).Scan(
+		&tx.ID, &tx.TransactionID, &tx.OrderID, &tx.PaymentMethod, &tx.PaymentRef,
+		&tx.Amount, &tx.Currency, &tx.Status, &tx.CreatedAt,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &tx, nil
+}
+
+func (r *pgRepository) GetByTransactionID(ctx context.Context, transactionID string) (*domain.Transaction, error) {
+	query := `
+		SELECT id, transaction_id, order_id, payment_method, payment_ref, amount, currency, status, created_at
+		FROM transactions
+		WHERE transaction_id = $1
+	`
+	var tx domain.Transaction
+	err := r.db.QueryRowContext(ctx, query, transactionID).Scan(
+		&tx.ID, &tx.TransactionID, &tx.OrderID, &tx.PaymentMethod, &tx.PaymentRef,
+		&tx.Amount, &tx.Currency, &tx.Status, &tx.CreatedAt,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &tx, nil
+}
+
+func (r *pgRepository) GetAll(ctx context.Context) ([]domain.Transaction, error) {
+	query := `
+		SELECT id, transaction_id, order_id, payment_method, payment_ref, amount, currency, status, created_at
+		FROM transactions
+		ORDER BY created_at DESC
+	`
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var transactions []domain.Transaction
+	for rows.Next() {
+		var tx domain.Transaction
+		err := rows.Scan(
+			&tx.ID, &tx.TransactionID, &tx.OrderID, &tx.PaymentMethod, &tx.PaymentRef,
+			&tx.Amount, &tx.Currency, &tx.Status, &tx.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		transactions = append(transactions, tx)
+	}
+	return transactions, rows.Err()
 }
