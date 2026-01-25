@@ -1,3 +1,6 @@
 node_modules/
 bin/Debug/
 backend-dotnet-tickets/bin/
+backend-dotnet-tickets/obj/
+backend-python-ledger/venv/
+venv/
