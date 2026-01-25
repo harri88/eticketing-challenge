@@ -137,4 +137,126 @@ paths:
       summary: Make Payment
       tags:
       - payments
+  /api/v1/transactions:
+    get:
+      description: Retrieve all payment transactions with pagination support
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all transactions
+      tags:
+      - transactions
+  /api/v1/transactions/{id}:
+    get:
+      description: Retrieve a specific transaction by its primary key ID
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get transaction by ID
+      tags:
+      - transactions
+  /api/v1/transactions/order/{order_id}:
+    get:
+      description: Retrieve a transaction by its associated order_id
+      parameters:
+      - description: Order ID
+        in: path
+        name: order_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get transaction by order ID
+      tags:
+      - transactions
+  /api/v1/transactions/txn/{transaction_id}:
+    get:
+      description: Retrieve a transaction by its unique transaction_id (e.g., TXN-CC-17000000)
+      parameters:
+      - description: Transaction ID (e.g., TXN-CC-17000000)
+        in: path
+        name: transaction_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get transaction by transaction ID
+      tags:
+      - transactions
 swagger: "2.0"

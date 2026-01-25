@@ -11,7 +11,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data_ticket:/var/lib/postgresql/data
-      - ./scripts/init_ticket.sql:/docker-entrypoint-initdb.d/init_ticket.sql
+      - ./sql_scripts/init_ticket.sql:/docker-entrypoint-initdb.d/init_ticket.sql
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -33,7 +33,7 @@ services:
       - "5433:5432" # Host port 5433 maps to container port 5432
     volumes:
       - postgres_data_payment:/var/lib/postgresql/data
-      - ./scripts/init_payment.sql:/docker-entrypoint-initdb.d/init_payment.sql
+      - ./sql_scripts/init_payment.sql:/docker-entrypoint-initdb.d/init_payment.sql
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -55,7 +55,7 @@ services:
       - "5434:5432" # Host port 5434 maps to container port 5432
     volumes:
       - postgres_data_ledger:/var/lib/postgresql/data
-      - ./scripts/init_ledger.sql:/docker-entrypoint-initdb.d/init_ledger.sql
+      - ./sql_scripts/init_ledger.sql:/docker-entrypoint-initdb.d/init_ledger.sql
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -65,55 +65,81 @@ services:
     networks:  # <--- ADDED THIS
       - ticketing-network
 
-  # --- Application Services ---
+  # # --- Application Services ---
 
-  # backend-dotnet-tickets:
-  #   build: ./backend-dotnet-tickets
-  #   container_name: backend_dotnet_tickets
-  #   ports:
-  #     - "7175:8080"
-  #   depends_on:
-  #     ticket-db:
-  #       condition: service_healthy
-  #   environment:
-  #     # Note: Port is 5432 because we are talking inside the docker network
-  #     ConnectionStrings__DefaultConnection: "Host=ticket-db;Port=5432;Database=ticket_db;Username=postgres;Password=postgres@12345"
-  #   networks:
-  #     - ticketing-network
+  backend-dotnet-tickets:
+    build: ./backend-dotnet-tickets
+    container_name: backend_dotnet_tickets
+    ports:
+      - "7175:8080"
+    depends_on:
+      ticket-db:
+        condition: service_healthy
+    environment:
+      # Note: Port is 5432 because we are talking inside the docker network
+      ConnectionStrings__DefaultConnection: "Host=ticket-db;Port=5432;Database=ticket_db;Username=postgres;Password=postgres@12345"
+    networks:
+      - ticketing-network
 
-  # backend-go-payment:
-  #   build: ./backend-go-payment
-  #   container_name: backend_go_payment
-  #   ports:
-  #     - "8081:8081"
-  #   depends_on:
-  #     payment-db:
-  #       condition: service_healthy  # <--- CHANGED from service_started
-  #   environment:
-  #     ENVIRONMENT: development
-  #     DB_HOST: payment-db
-  #     DB_PORT: 5432 # Internal port is always 5432
-  #     DB_USER: postgres
-  #     DB_PASSWORD: postgres@12345
-  #     DB_NAME: payment_db
-  #     TICKET_SERVICE_URL: http://backend-dotnet-tickets:8080
-  #     PAYMENT_GATEWAY_PROVIDER: stripe
-  #   networks:
-  #     - ticketing-network
+  backend-go-payment:
+    build: ./backend-go-payment
+    container_name: backend_go_payment
+    ports:
+      - "8081:8081"
+    depends_on:
+      payment-db:
+        condition: service_healthy  # <--- CHANGED from service_started
+    environment:
+      ENVIRONMENT: development
+      DB_HOST: payment-db
+      DB_PORT: 5432 # Internal port is always 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres@12345
+      DB_NAME: payment_db
+      TICKET_SERVICE_URL: http://backend-dotnet-tickets:8080
+      PAYMENT_GATEWAY_PROVIDER: stripe
+    networks:
+      - ticketing-network
 
-  # backend-python-ledger:
-  #   build: ./backend-python-ledger
-  #   container_name: backend_python_ledger
-  #   ports:
-  #     - "8000:8000"
-  #   depends_on:
-  #     ledger-db:
-  #       condition: service_healthy  # <--- CHANGED from service_started
-  #   environment:
-  #     # CHANGED: Encoded the '@' in password to '%40' to avoid parsing errors
-  #     DATABASE_URL: "postgresql://postgres:postgres%4012345@ledger-db:5432/ledger_db"
-  #   networks:
-  #     - ticketing-network
+  backend-python-ledger:
+    build: ./backend-python-ledger
+    container_name: backend_python_ledger
+    ports:
+      - "8000:8000"
+    depends_on:
+      ledger-db:
+        condition: service_healthy  # <--- CHANGED from service_started
+    environment:
+      # CHANGED: Encoded the '@' in password to '%40' to avoid parsing errors
+      DATABASE_URL: "postgresql://postgres:postgres%4012345@ledger-db:5432/ledger_db"
+    networks:
+      - ticketing-network
+
+  # --- Frontend Services ---
+
+  frontend-react:
+    build: ./frontend-react
+    container_name: frontend_react
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: http://backend-dotnet-tickets:8080
+    depends_on:
+      - backend-dotnet-tickets
+    networks:
+      - ticketing-network
+
+  frontend-backoffice:
+    build: ./frontend-backoffice
+    container_name: frontend_backoffice
+    ports:
+      - "3001:3000"
+    environment:
+      REACT_APP_API_URL: http://backend-dotnet-tickets:8080
+    depends_on:
+      - backend-dotnet-tickets
+    networks:
+      - ticketing-network
 
 networks:
   ticketing-network:

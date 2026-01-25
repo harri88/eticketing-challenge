@@ -189,8 +189,8 @@ const Backoffice = () => {
                       <td className="quota-remaining">{t.remaining || t.quota || 0}</td>
                       <td>{(t.quota || 0) - (t.remaining || 0)}</td>
                       <td>
-                        <span className={`status-badge ${(t.remaining || 0) > 0 ? 'available' : 'sold-out'}`}>
-                          {(t.remaining || 0) > 0 ? 'Available' : 'Sold Out'}
+                        <span className={`status-badge ${(t.remaining || 0) > 0 ? 'sold-out' : 'available'}`}>
+                          {(t.remaining || 0) > 0 ? 'Sold Out' : 'Available'}
                         </span>
                       </td>
                     </tr>

@@ -1,4 +1,4 @@
-const TICKET_SERVICE_URL = process.env.REACT_APP_TICKET_SERVICE || 'http://localhost:7175';
+const TICKET_SERVICE_URL = process.env.REACT_APP_TICKET_SERVICE || 'http://localhost:5020';
 const PAYMENT_SERVICE_URL = process.env.REACT_APP_PAYMENT_SERVICE || 'http://localhost:8081';
 const LEDGER_SERVICE_URL = process.env.REACT_APP_LEDGER_SERVICE || 'http://localhost:8000';
 
