@@ -14,13 +14,10 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy source code
-COPY cmd/api/main.go ./cmd/api/main.go
-COPY internal/ ./internal/
-COPY config/ ./config/
-COPY docs/ ./docs/
+COPY . .
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o api ./cmd/api/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o api ./cmd/api
 
 # Runtime stage
 FROM alpine:latest
