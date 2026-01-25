@@ -82,7 +82,8 @@ services:
       - ticketing-network
 
   backend-go-payment:
-    build: ./backend-go-payment
+    build:
+      context: ./backend-go-payment
     container_name: backend_go_payment
     ports:
       - "8081:8081"
