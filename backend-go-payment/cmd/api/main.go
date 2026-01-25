@@ -51,7 +51,17 @@ func main() {
 
 	// 4. Add CORS Middleware
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:8080", "http://localhost:3001", "http://127.0.0.1:8080"},
+		AllowOrigins: []string{
+			"http://localhost:3000",
+			"http://localhost:8080",
+			"http://localhost:3001",
+			"http://127.0.0.1:8080",
+
+			"http://3.106.254.198:3000",
+			"http://3.106.254.198:8080",
+			"http://3.106.254.198:3001",
+			"http://3.106.254.198:8080",
+		},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization", "X-Requested-With", "Idempotency-Key"},
 		ExposeHeaders:    []string{"Content-Length"},
