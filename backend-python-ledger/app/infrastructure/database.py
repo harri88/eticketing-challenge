@@ -13,15 +13,19 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 # Database configuration
-DATABASE_HOST = os.getenv("DB_HOST", "localhost")
-DATABASE_PORT = os.getenv("DB_PORT", "5434")
-DATABASE_USER = os.getenv("DB_USER", "postgres")
-DATABASE_PASSWORD = os.getenv("DB_PASSWORD", "postgres@12345")
-DATABASE_NAME = os.getenv("DB_NAME", "ledger_db")
+DATABASE_URL_FROM_ENV = os.getenv("DATABASE_URL")
 
-# URL encode the password to handle special characters like @
-encoded_password = quote(DATABASE_PASSWORD, safe='')
-DATABASE_URL = f"postgresql://{DATABASE_USER}:{encoded_password}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
+if DATABASE_URL_FROM_ENV:
+    DATABASE_URL = DATABASE_URL_FROM_ENV
+else:
+    DATABASE_HOST = os.getenv("DB_HOST", "localhost")
+    DATABASE_PORT = os.getenv("DB_PORT", "5434")
+    DATABASE_USER = os.getenv("DB_USER", "postgres")
+    DATABASE_PASSWORD = os.getenv("DB_PASSWORD", "postgres@12345")
+    DATABASE_NAME = os.getenv("DB_NAME", "ledger_db")
+    # URL encode the password to handle special characters like @
+    encoded_password = quote(DATABASE_PASSWORD, safe='')
+    DATABASE_URL = f"postgresql://{DATABASE_USER}:{encoded_password}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
 
 # Create engine
 engine = create_engine(

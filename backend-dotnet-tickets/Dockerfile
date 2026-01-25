@@ -24,14 +24,13 @@ WORKDIR /app
 # Copy published application from build stage
 COPY --from=build /app/publish .
 
-# Expose port (HTTPS default port)
-EXPOSE 8080
-EXPOSE 8443
+# Expose ports
+EXPOSE 5020
 
 # Set environment for non-development
 ENV ASPNETCORE_ENVIRONMENT=Production
-ENV ASPNETCORE_HTTP_PORTS=8080
-ENV ASPNETCORE_HTTPS_PORTS=8443
+ENV ASPNETCORE_HTTP_PORTS=5020
+ENV ASPNETCORE_URLS=http://+:5020
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \

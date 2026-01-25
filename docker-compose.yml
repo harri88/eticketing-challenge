@@ -71,7 +71,7 @@ services:
     build: ./backend-dotnet-tickets
     container_name: backend_dotnet_tickets
     ports:
-      - "7175:8080"
+      - "5020:5020"
     depends_on:
       ticket-db:
         condition: service_healthy
@@ -96,7 +96,7 @@ services:
       DB_USER: postgres
       DB_PASSWORD: postgres@12345
       DB_NAME: payment_db
-      TICKET_SERVICE_URL: http://backend-dotnet-tickets:8080
+      TICKET_SERVICE_URL: http://backend-dotnet-tickets:5020
       PAYMENT_GATEWAY_PROVIDER: stripe
     networks:
       - ticketing-network
@@ -123,7 +123,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      REACT_APP_API_URL: http://backend-dotnet-tickets:8080
+      REACT_APP_API_URL: http://backend-dotnet-tickets:5020
     depends_on:
       - backend-dotnet-tickets
     networks:
@@ -135,9 +135,11 @@ services:
     ports:
       - "3001:3000"
     environment:
-      REACT_APP_API_URL: http://backend-dotnet-tickets:8080
+      REACT_APP_API_URL: http://backend-dotnet-tickets:5020
     depends_on:
       - backend-dotnet-tickets
+      - backend-go-payment
+      - backend-python-ledger
     networks:
       - ticketing-network
 
