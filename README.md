@@ -40,6 +40,17 @@ graph TD
 | **frontend-react** | React 19 | `3000` | Customer-facing application for browsing tickets, cart management, and checkout. |
 | **frontend-backoffice** | React 19 | `3001` | Administrative dashboard for viewing sales, inventory, and ledger entries. |
 
+## 🌐 Live Demo
+
+The functionality is deployed and accessible at the following public endpoints:
+
+- **Customer Frontend**: [http://3.106.254.198:3000](http://3.106.254.198:3000)
+- **Backoffice Dashboard**: [http://3.106.254.198:3001](http://3.106.254.198:3001)
+- **APIs & Documentation**:
+  - Ticket Service (Swagger): [http://3.106.254.198:5020/swagger/index.html](http://3.106.254.198:5020/swagger/index.html)
+  - Payment Service (Docs): [http://3.106.254.198:8081/swagger/index.html](http://3.106.254.198:8081/swagger/index.html)
+  - Ledger Service (Docs): [http://3.106.254.198:8000/docs](http://3.106.254.198:8000/docs)
+
 ## 🚀 How to Run Locally
 
 ### Prerequisites
