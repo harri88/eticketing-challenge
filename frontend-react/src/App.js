@@ -3,11 +3,13 @@ import './App.css';
 import ThankYouPage from './ThankYouPage';
 
 // --- MOCK API SERVICE ---
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5020';
+
 const apiService = {
     getTickets: async () => {
     try {
       // 1. Call the real .NET API
-      const response = await fetch('http://localhost:5020/api/v1/tickets');
+      const response = await fetch(`${API_BASE_URL}/api/v1/tickets`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
