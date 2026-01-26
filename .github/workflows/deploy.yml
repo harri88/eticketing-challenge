@@ -1,0 +1,71 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create deployment artifact
+        run: |
+          tar -czf deploy.tar.gz \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='bin' \
+            --exclude='obj' \
+            --exclude='venv' \
+            --exclude='__pycache__' \
+            .
+
+      - name: Copy artifact to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "deploy.tar.gz"
+          target: "/home/${{ secrets.EC2_USER }}/app_temp"
+
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Define App Directory
+            APP_DIR="/home/${{ secrets.EC2_USER }}/eticketing-challenge"
+            mkdir -p $APP_DIR
+
+            # Extract artifact
+            tar -xzf /home/${{ secrets.EC2_USER }}/app_temp/deploy.tar.gz -C $APP_DIR
+            rm -rf /home/${{ secrets.EC2_USER }}/app_temp
+
+            cd $APP_DIR
+
+            # Generate .env file dynamically from Secrets
+            echo "Generating production .env file..."
+            echo "PUBLIC_IP=${{ secrets.EC2_HOST }}" > .env
+            echo "PUBLIC_DOMAIN=${{ secrets.EC2_HOST }}" >> .env
+            
+            # Use public IP for URLs
+            echo "TICKET_API_URL=http://${{ secrets.EC2_HOST }}:5020" >> .env
+            echo "PAYMENT_API_URL=http://${{ secrets.EC2_HOST }}:8081" >> .env
+            echo "LEDGER_API_URL=http://${{ secrets.EC2_HOST }}:8000" >> .env
+            
+            # This variable is crucial for the Frontend build arg
+            echo "REACT_APP_API_URL=http://${{ secrets.EC2_HOST }}:5020" >> .env
+
+            # Restart Services
+            echo "Restarting services..."
+            # Note: We use sudo, or ensure user is in docker group
+            # Force rebuild to pick up new REACT_APP_API_URL ARG
+            sudo docker-compose down
+            sudo docker-compose up -d --build
+
+            echo "Deployment Complete!"

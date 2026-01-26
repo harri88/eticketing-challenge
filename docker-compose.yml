@@ -119,24 +119,36 @@ services:
   # --- Frontend Services ---
 
   frontend-react:
-    build: ./frontend-react
+    build:
+      context: ./frontend-react
+      args:
+        REACT_APP_API_URL: ${REACT_APP_API_URL}
     container_name: frontend_react
     ports:
       - "3000:3000"
     environment:
-      REACT_APP_API_URL: http://backend-dotnet-tickets:5020
+      REACT_APP_API_URL: ${REACT_APP_API_URL}
     depends_on:
       - backend-dotnet-tickets
     networks:
       - ticketing-network
 
   frontend-backoffice:
-    build: ./frontend-backoffice
+    build:
+      context: ./frontend-backoffice
+      args:
+        REACT_APP_TICKET_SERVICE: ${REACT_APP_API_URL}
+        REACT_APP_PAYMENT_SERVICE: ${PAYMENT_API_URL}
+        REACT_APP_LEDGER_SERVICE: ${LEDGER_API_URL}
     container_name: frontend_backoffice
     ports:
       - "3001:3000"
     environment:
-      REACT_APP_API_URL: http://backend-dotnet-tickets:5020
+      # Use same public URL for all services if they are served via reverse proxy on same host
+      # Or specific ports if exposed directly
+      REACT_APP_TICKET_SERVICE: ${REACT_APP_API_URL} 
+      REACT_APP_PAYMENT_SERVICE: ${PAYMENT_API_URL}
+      REACT_APP_LEDGER_SERVICE: ${LEDGER_API_URL}
     depends_on:
       - backend-dotnet-tickets
       - backend-go-payment

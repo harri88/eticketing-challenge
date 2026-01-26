@@ -3,11 +3,16 @@ import './App.css';
 import ThankYouPage from './ThankYouPage';
 
 // --- MOCK API SERVICE ---
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5020';
+// Extract just the host:port from base URL for payment service (assuming it follows pattern)
+// Default to 8081 if running locally
+const PAYMENT_API_BASE_URL = API_BASE_URL.replace(':5020', ':8081');
+
 const apiService = {
     getTickets: async () => {
     try {
       // 1. Call the real .NET API
-      const response = await fetch('http://localhost:5020/api/v1/tickets');
+      const response = await fetch(`${API_BASE_URL}/api/v1/tickets`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -39,7 +44,7 @@ const apiService = {
         cart_items: cartItems
       };
 
-      const response = await fetch('http://localhost:5020/api/v1/checkout/orders', {
+      const response = await fetch(`${API_BASE_URL}/api/v1/checkout/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -68,7 +73,7 @@ const apiService = {
         card_cvc: cardDetails?.cardCvc || ''
       };
 
-      const response = await fetch('http://localhost:8081/api/v1/payments', {
+      const response = await fetch(`${PAYMENT_API_BASE_URL}/api/v1/payments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
