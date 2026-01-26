@@ -1,0 +1,29 @@
+name: Backend .NET Tickets CI
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+    paths:
+      - 'backend-dotnet-tickets/**'
+      - '.github/workflows/backend-dotnet.yml'
+  pull_request:
+    branches: [ "main", "dev" ]
+    paths:
+      - 'backend-dotnet-tickets/**'
+      - '.github/workflows/backend-dotnet.yml'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    # Since project targets .NET 10 (Preview/Custom), we rely on the Docker build 
+    # which uses the specified image to ensure environment consistency.
+    - name: Build Docker Image
+      run: |
+        docker build -t backend-dotnet-tickets ./backend-dotnet-tickets
+
+    # Optional: If you had a test stage in your Dockerfile, you could target it.
+    # example: docker build --target test ...
