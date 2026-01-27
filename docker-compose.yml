@@ -98,6 +98,7 @@ services:
       DB_PASSWORD: postgres@12345
       DB_NAME: payment_db
       TICKET_SERVICE_URL: http://backend-dotnet-tickets:5020
+      LEDGER_SERVICE_URL: http://backend-python-ledger:8000
       PAYMENT_GATEWAY_PROVIDER: stripe
     networks:
       - ticketing-network
