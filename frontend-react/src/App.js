@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css'; 
 import ThankYouPage from './ThankYouPage';
+import { v4 as uuidv4 } from 'uuid';
 
 // --- MOCK API SERVICE ---
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5020';
@@ -62,7 +63,7 @@ const apiService = {
       return null;
     }
   },
-  processPayment: async (orderId, amount, paymentMethod, cardDetails) => {
+  processPayment: async (orderId, amount, paymentMethod, cardDetails, idempotencyKey) => {
     try {
       const payload = {
         order_id: orderId,
@@ -75,7 +76,10 @@ const apiService = {
 
       const response = await fetch(`${PAYMENT_API_BASE_URL}/api/v1/payments`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            'Idempotency-Key': idempotencyKey || uuidv4() 
+        },
         body: JSON.stringify(payload),
       });
       
@@ -254,6 +258,8 @@ const PaymentPage = ({ total, orderId, onPaymentSuccess }) => {
   const [cardNumber, setCardNumber] = useState('');
   const [cardExpiry, setCardExpiry] = useState('');
   const [cardCvc, setCardCvc] = useState('');
+  // Generate a unique idempotency key when the payment page loads for this order
+  const [idempotencyKey] = useState(uuidv4());
 
   // Handle QR payment timer
   useEffect(() => {
@@ -289,7 +295,8 @@ const PaymentPage = ({ total, orderId, onPaymentSuccess }) => {
       orderId,
       total,
       'credit_card',
-      cardDetails
+      cardDetails,
+      idempotencyKey
     );
 
     if (response && response.transaction_id) {
@@ -313,7 +320,8 @@ const PaymentPage = ({ total, orderId, onPaymentSuccess }) => {
       orderId,
       total,
       'qr_scan',
-      {}
+      {},
+      idempotencyKey
     );
 
     if (response && response.transaction_id) {
