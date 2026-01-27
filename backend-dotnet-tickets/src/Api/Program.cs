@@ -34,10 +34,9 @@ var app = builder.Build();
 // {
     app.UseSwagger();
     app.UseSwaggerUI();
-    // app.UseHttpsRedirection();
 // }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.UseCors("AllowReactApp"); 
 app.UseAuthorization();
 app.MapControllers();

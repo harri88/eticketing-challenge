@@ -33,6 +33,7 @@ func main() {
 	log.Printf("Database: %s:%d/%s", cfg.Database.Host, cfg.Database.Port, cfg.Database.DBName)
 	log.Printf("Server: %s:%d", cfg.Server.Host, cfg.Server.Port)
 	log.Printf("Ticket Service: %s (timeout: %ds)", cfg.TicketService.URL, cfg.TicketService.Timeout)
+	log.Printf("Ledger Service: %s", cfg.LedgerService.URL)
 	log.Printf("Payment Gateway: %s", cfg.PaymentGateway.DefaultProvider)
 
 	// 2. Init DB
@@ -64,7 +65,7 @@ func main() {
 	gwFactory := gateway.NewPaymentGatewayFactory()
 	ticketClient := client.NewTicketClient(cfg.TicketService.URL)
 
-	payUsecase := usecase.NewPaymentUsecase(repo, gwFactory, ticketClient)
+	payUsecase := usecase.NewPaymentUsecase(repo, gwFactory, ticketClient, cfg.LedgerService.URL)
 	txnUsecase := usecase.NewTransactionUsecase(repo)
 
 	// 5. Init Handlers

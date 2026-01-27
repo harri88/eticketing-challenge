@@ -19,6 +19,7 @@ type Config struct {
 
 	// External Services Configuration
 	TicketService  TicketServiceConfig
+	LedgerService  LedgerServiceConfig
 	PaymentGateway PaymentGatewayConfig
 
 	// Environment
@@ -44,6 +45,11 @@ type ServerConfig struct {
 	ReadTimeoutSec  int
 	WriteTimeoutSec int
 	Environment     string // development or production
+}
+
+// LedgerServiceConfig holds ledger service configuration
+type LedgerServiceConfig struct {
+	URL string
 }
 
 // TicketServiceConfig holds ticket service configuration
@@ -104,6 +110,9 @@ func Load() *Config {
 		TicketService: TicketServiceConfig{
 			URL:     getEnv("TICKET_SERVICE_URL", "http://localhost:5020"),
 			Timeout: getEnvInt("TICKET_SERVICE_TIMEOUT", 30),
+		},
+		LedgerService: LedgerServiceConfig{
+			URL: getEnv("LEDGER_SERVICE_URL", "http://localhost:8000"),
 		},
 		PaymentGateway: PaymentGatewayConfig{
 			DefaultProvider: getEnv("PAYMENT_GATEWAY_PROVIDER", "stripe"),

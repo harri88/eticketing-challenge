@@ -24,12 +24,12 @@ type paymentUsecase struct {
 	timeout        time.Duration
 }
 
-func NewPaymentUsecase(repo domain.TransactionRepository, gf *gateway.PaymentGatewayFactory, tc domain.TicketClient) domain.PaymentUsecase {
+func NewPaymentUsecase(repo domain.TransactionRepository, gf *gateway.PaymentGatewayFactory, tc domain.TicketClient, ledgerURL string) domain.PaymentUsecase {
 	return &paymentUsecase{
 		repo:           repo,
 		gatewayFactory: gf,
 		ticketClient:   tc,
-		ledgerURL:      "http://localhost:8000", // Default ledger service URL
+		ledgerURL:      ledgerURL,
 		httpClient:     &http.Client{Timeout: 10 * time.Second},
 		timeout:        30 * time.Second, // Global timeout
 	}
