@@ -30,6 +30,72 @@ graph TD
     end
 ```
 
+## 🗄️ Database Entity Relationship Diagram (ERD)
+
+The following diagram illustrates the data models across the three isolated databases and their logical relationships. Note that cross-service references (dotted lines) are logical links, not foreign keys.
+
+```mermaid
+erDiagram
+    %% Ticket Service Database (PostgreSQL)
+    TICKET_DB_TICKETS {
+        varchar id PK
+        varchar name
+        decimal price
+        varchar currency
+        int quota
+        int held_quota
+    }
+    TICKET_DB_ORDERS {
+        varchar id PK
+        varchar customer_email
+        decimal total_amount
+        varchar currency
+        varchar status
+        timestamp created_at
+        timestamp paid_at
+    }
+    TICKET_DB_ORDER_ITEMS {
+        serial id PK
+        varchar order_id FK
+        varchar ticket_id FK
+        int quantity
+        decimal price_at_purchase
+    }
+
+    TICKET_DB_ORDERS ||--|{ TICKET_DB_ORDER_ITEMS : "contains"
+    TICKET_DB_TICKETS ||--o{ TICKET_DB_ORDER_ITEMS : "reserved_in"
+
+    %% Payment Service Database (PostgreSQL)
+    PAYMENT_DB_TRANSACTIONS {
+        serial id PK
+        varchar transaction_id UK "Unique Payment Ref"
+        varchar order_id "Ref to TICKET_DB_ORDERS"
+        varchar payment_method
+        varchar payment_ref "Provider Ref"
+        decimal amount
+        varchar currency
+        varchar status
+        timestamp created_at
+    }
+
+    %% Logical link: Transaction pays for an Order
+    TICKET_DB_ORDERS ||--o| PAYMENT_DB_TRANSACTIONS : "paid_via (Logical)"
+
+    %% Ledger Service Database (PostgreSQL)
+    LEDGER_DB_ENTRIES {
+        serial id PK
+        varchar transaction_id "Ref to PAYMENT_DB_TRANSACTIONS"
+        varchar account_name
+        varchar entry_type "DEBIT/CREDIT"
+        decimal amount
+        text description
+        timestamp created_at
+    }
+
+    %% Logical link: Transaction generates Ledger Entries
+    PAYMENT_DB_TRANSACTIONS ||--|{ LEDGER_DB_ENTRIES : "audited_by (Logical)"
+```
+
 ## 🧩 Service Responsibilities
 
 | Service | Stack | Port | Description |
