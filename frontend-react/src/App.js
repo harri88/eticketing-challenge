@@ -98,11 +98,12 @@ const apiService = {
   }
 };
 
-const generateReceipt = () => ({
-  transactionId: `TRX-${Math.floor(Math.random() * 100000000)}`,
-  paymentRef: `REF-${Math.random().toString(36).substring(7).toUpperCase()}`,
-  timestamp: new Date().toLocaleString(),
-});
+// Unused helper function - kept for potential future use
+// const generateReceipt = () => ({
+//   transactionId: `TRX-${Math.floor(Math.random() * 100000000)}`,
+//   paymentRef: `REF-${Math.random().toString(36).substring(7).toUpperCase()}`,
+//   timestamp: new Date().toLocaleString(),
+// });
 
 // ==========================================
 // COMPONENT 1: TICKET SELECTION (Tidied UI)
@@ -278,6 +279,7 @@ const PaymentPage = ({ total, orderId, onPaymentSuccess }) => {
       }, 1000);
     }
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [method]);
 
   // Process credit card payment

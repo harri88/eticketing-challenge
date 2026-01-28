@@ -23,7 +23,7 @@ mkdir -p "$OUTPUT_DIR"
 cd "$PROJECT_DIR"
 
 echo "Installing dependencies..."
-npm ci
+npm ci || npm install
 
 echo "Running tests..."
 npm test -- --passWithNoTests --watchAll=false || echo "Tests failed or no tests found"
