@@ -1,0 +1,152 @@
+version: '3.8'
+
+services:
+  # Database for .NET Ticket Service
+  ticket-db:
+    image: postgres:15-alpine
+    container_name: ticket_postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres@12345
+      POSTGRES_DB: ticket_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_ticket:/var/lib/postgresql/data
+      - ./sql_scripts/init_ticket.sql:/docker-entrypoint-initdb.d/init_ticket.sql
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ticketing-network
+
+  # Database for Go Payment Service
+  payment-db:
+    image: postgres:15-alpine
+    container_name: payment_postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres@12345
+      POSTGRES_DB: payment_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data_payment:/var/lib/postgresql/data
+      - ./sql_scripts/init_payment.sql:/docker-entrypoint-initdb.d/init_payment.sql
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ticketing-network
+
+  # Database for Python Ledger Service
+  ledger-db:
+    image: postgres:15-alpine
+    container_name: ledger_postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres@12345
+      POSTGRES_DB: ledger_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data_ledger:/var/lib/postgresql/data
+      - ./sql_scripts/init_ledger.sql:/docker-entrypoint-initdb.d/init_ledger.sql
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ticketing-network
+
+  # --- Application Services ---
+
+  backend-dotnet-tickets:
+    # Image will be pulled from GHCR
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/backend-dotnet-tickets:latest
+    container_name: backend_dotnet_tickets
+    ports:
+      - "5020:5020"
+    depends_on:
+      ticket-db:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=ticket-db;Port=5432;Database=ticket_db;Username=postgres;Password=postgres@12345"
+    networks:
+      - ticketing-network
+
+  backend-go-payment:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/backend-go-payment:latest
+    container_name: backend_go_payment
+    ports:
+      - "8081:8081"
+    depends_on:
+      payment-db:
+        condition: service_healthy
+    environment:
+      ENVIRONMENT: production
+      DB_HOST: payment-db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres@12345
+      DB_NAME: payment_db
+      TICKET_SERVICE_URL: http://backend-dotnet-tickets:5020
+      LEDGER_SERVICE_URL: http://backend-python-ledger:8000
+      PAYMENT_GATEWAY_PROVIDER: stripe
+    networks:
+      - ticketing-network
+
+  backend-python-ledger:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/backend-python-ledger:latest
+    container_name: backend_python_ledger
+    ports:
+      - "8000:8000"
+    depends_on:
+      ledger-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres%4012345@ledger-db:5432/ledger_db"
+    networks:
+      - ticketing-network
+
+  # --- Frontend Services ---
+
+  frontend-react:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/frontend-react:latest
+    container_name: frontend_react
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend-dotnet-tickets
+    networks:
+      - ticketing-network
+
+  frontend-backoffice:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/frontend-backoffice:latest
+    container_name: frontend_backoffice
+    ports:
+      - "3001:3000"
+    depends_on:
+      - backend-dotnet-tickets
+    networks:
+      - ticketing-network
+
+networks:
+  ticketing-network:
+    driver: bridge
+
+volumes:
+  postgres_data_ticket:
+    driver: local
+  postgres_data_payment:
+    driver: local
+  postgres_data_ledger:
+    driver: local
