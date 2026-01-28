@@ -42,7 +42,9 @@ echo "$VERSION" > "$OUTPUT_DIR/VERSION"
 # Copy configuration and documentation
 cp .env.example "$OUTPUT_DIR/" 2>/dev/null || true
 cp -r docs "$OUTPUT_DIR/" 2>/dev/null || true
-cp *.md "$OUTPUT_DIR/" 2>/dev/null || true
+for file in ./*.md; do
+  [ -f "$file" ] && cp "$file" "$OUTPUT_DIR/" || true
+done
 cp Dockerfile "$OUTPUT_DIR/" 2>/dev/null || true
 
 # Create archive

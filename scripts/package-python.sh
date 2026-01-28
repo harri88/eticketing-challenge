@@ -23,7 +23,9 @@ mkdir -p "$OUTPUT_DIR"
 cd "$PROJECT_DIR"
 
 echo "Copying application files..."
-cp -r *.py "$OUTPUT_DIR/" 2>/dev/null || true
+for file in ./*.py; do
+  [ -f "$file" ] && cp "$file" "$OUTPUT_DIR/" || true
+done
 cp -r app "$OUTPUT_DIR/" 2>/dev/null || true
 cp -r config "$OUTPUT_DIR/" 2>/dev/null || true
 cp -r models "$OUTPUT_DIR/" 2>/dev/null || true
@@ -34,7 +36,9 @@ cp -r database "$OUTPUT_DIR/" 2>/dev/null || true
 # Copy configuration and documentation
 cp requirements.txt "$OUTPUT_DIR/" 2>/dev/null || true
 cp .env.example "$OUTPUT_DIR/" 2>/dev/null || true
-cp *.md "$OUTPUT_DIR/" 2>/dev/null || true
+for file in ./*.md; do
+  [ -f "$file" ] && cp "$file" "$OUTPUT_DIR/" || true
+done
 cp Dockerfile "$OUTPUT_DIR/" 2>/dev/null || true
 
 # Create version file
