@@ -4,3 +4,8 @@ backend-dotnet-tickets/bin/
 backend-dotnet-tickets/obj/
 backend-python-ledger/venv/
 venv/
+
+# Distribution packages
+dist/
+*.tar.gz
+*.zip
