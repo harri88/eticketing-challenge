@@ -96,6 +96,68 @@ erDiagram
     PAYMENT_DB_TRANSACTIONS ||--|{ LEDGER_DB_ENTRIES : "audited_by (Logical)"
 ```
 
+## 📜 Sequence Diagrams
+
+### 1. User Journey (Get Tickets → Create Order → Payment)
+
+The following sequence diagram illustrates the complete flow of a user selecting tickets, reserving them (Creating Order), and eventually paying for them (which triggers Ledger recording).
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as User (Frontend)
+    participant T as Ticket Service (.NET)
+    participant DB_T as Ticket DB
+    participant P as Payment Service (Go)
+    participant DB_P as Payment DB
+    participant L as Ledger Service (Python)
+    participant DB_L as Ledger DB
+
+    %% 1. Get Tickets
+    Note over U, T: Step 1: Browse Available Tickets
+    U->>T: GET /api/v1/tickets
+    T->>DB_T: Select * from tickets
+    DB_T-->>T: [Gold, Premium, VIP...]
+    T-->>U: JSON { data: [tickets...] }
+
+    %% 2. Create Order
+    Note over U, T: Step 2: Checkout / Reserve
+    U->>T: POST /api/v1/checkout/orders
+    Note right of U: { customer_email, cart_items }
+    T->>DB_T: Check Quota & Create Order (Pending)
+    DB_T-->>T: Order Created (ID: ORD-123)
+    T-->>U: JSON { order_id: "ORD-123", total: 500 }
+
+    %% 3. Payment
+    Note over U, P: Step 3: Process Payment
+    U->>P: POST /api/v1/payments
+    Note right of U: { order_id, amount, method, Idempotency-Key }
+    
+    rect rgb(240, 248, 255)
+        Note right of P: Idempotency Check
+        P->>DB_P: Create Transaction (PENDING)
+        
+        P->>P: Process Gateway (Stripe/Mock)
+        
+        alt Payment Success
+            P->>DB_P: Update Transaction (SUCCESS)
+            
+            par Async Notifications
+                P->>T: POST /api/v1/webhooks/payment-success
+                T->>DB_T: Update Order -> PAID
+                
+                P->>L: POST /api/v1/ledger
+                L->>DB_L: Insert Debit/Credit Entries
+            end
+
+            P-->>U: JSON { status: "SUCCESS", tx_id: "TXN-123" }
+        else Payment Failed
+            P->>DB_P: Update Transaction (FAILED)
+            P-->>U: 400 Bad Request
+        end
+    end
+```
+
 ## 🧩 Service Responsibilities
 
 | Service | Stack | Port | Description |
