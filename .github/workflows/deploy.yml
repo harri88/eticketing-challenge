@@ -21,23 +21,14 @@ jobs:
         service: 
           - name: backend-dotnet-tickets
             context: ./backend-dotnet-tickets
-            build-args: ""
           - name: backend-go-payment
             context: ./backend-go-payment
-            build-args: ""
           - name: backend-python-ledger
             context: ./backend-python-ledger
-            build-args: ""
           - name: frontend-react
             context: ./frontend-react
-            build-args: |
-              REACT_APP_API_URL=http://${{ secrets.EC2_HOST }}:5020
           - name: frontend-backoffice
             context: ./frontend-backoffice
-            build-args: |
-              REACT_APP_TICKET_SERVICE=http://${{ secrets.EC2_HOST }}:5020
-              REACT_APP_PAYMENT_SERVICE=http://${{ secrets.EC2_HOST }}:8081
-              REACT_APP_LEDGER_SERVICE=http://${{ secrets.EC2_HOST }}:8000
 
     steps:
       - name: Checkout repository
@@ -83,7 +74,11 @@ jobs:
       - name: Checkout code (for compose file)
         uses: actions/checkout@v4
 
-      - name: Lowercase Repo Owner
+      - name: Lowercas|
+            REACT_APP_API_URL=http://${{ secrets.EC2_HOST }}:5020
+            REACT_APP_TICKET_SERVICE=http://${{ secrets.EC2_HOST }}:5020
+            REACT_APP_PAYMENT_SERVICE=http://${{ secrets.EC2_HOST }}:8081
+            REACT_APP_LEDGER_SERVICE=http://${{ secrets.EC2_HOST }}:8000
         id: owner_lower
         run: |
           echo "owner_lower=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
