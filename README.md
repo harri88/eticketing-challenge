@@ -262,12 +262,19 @@ curl -X POST "http://localhost:5020/api/v1/checkout/orders" \
 ```bash
 curl -X POST "http://localhost:8081/api/v1/payments" \
      -H "Content-Type: application/json" \
+     -H 'Idempotency-Key: b4e62cc4-cc09-4b07-a00a-42dcd5cae281' \
      -d '{
            "order_id": "ORD-12345",
            "amount": 200.00,
            "currency": "AED",
            "payment_method": "credit_card"
          }'
+curl 'http://3.106.254.198:8081/api/v1/payments' \
+      -H 'Referer: http://3.106.254.198:3000/' \
+      -H 'Idempotency-Key: b4e62cc4-cc09-4b07-a00a-42dcd5cae281' \
+      -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36' \
+      -H 'Content-Type: application/json' \
+      --data-raw '{"order_id":"ORD-19237671A0","amount":200,"payment_method":"qr_scan","card_number":"","card_expiry":"","card_cvc":""}'
 ```
 
 ## ⚖️ Assumptions & Trade-offs
