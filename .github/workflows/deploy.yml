@@ -58,6 +58,23 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Prepare Build Args
+        id: build_params
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+           if [ "${{ matrix.service.name }}" = "frontend-react" ]; then
+             echo "args=REACT_APP_API_URL=http://$EC2_HOST:5020" >> $GITHUB_OUTPUT
+           elif [ "${{ matrix.service.name }}" = "frontend-backoffice" ]; then
+             echo "args<<EOF" >> $GITHUB_OUTPUT
+             echo "REACT_APP_TICKET_SERVICE=http://$EC2_HOST:5020" >> $GITHUB_OUTPUT
+             echo "REACT_APP_PAYMENT_SERVICE=http://$EC2_HOST:8081" >> $GITHUB_OUTPUT
+             echo "REACT_APP_LEDGER_SERVICE=http://$EC2_HOST:8000" >> $GITHUB_OUTPUT
+             echo "EOF" >> $GITHUB_OUTPUT
+           else
+             echo "args=" >> $GITHUB_OUTPUT
+           fi
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -65,7 +82,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: ${{ matrix.service.build-args }}
+          build-args: ${{ steps.build_params.outputs.args }}
 
   deploy:
     needs: build-and-push
@@ -74,11 +91,7 @@ jobs:
       - name: Checkout code (for compose file)
         uses: actions/checkout@v4
 
-      - name: Lowercas|
-            REACT_APP_API_URL=http://${{ secrets.EC2_HOST }}:5020
-            REACT_APP_TICKET_SERVICE=http://${{ secrets.EC2_HOST }}:5020
-            REACT_APP_PAYMENT_SERVICE=http://${{ secrets.EC2_HOST }}:8081
-            REACT_APP_LEDGER_SERVICE=http://${{ secrets.EC2_HOST }}:8000
+      - name: Lowercase Repo Owner
         id: owner_lower
         run: |
           echo "owner_lower=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
