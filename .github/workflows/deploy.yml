@@ -122,11 +122,11 @@ jobs:
             # If your packages are private, you need to run `docker login ghcr.io -u USER -p TOKEN` once on the server.
             
             # Pull latest images
-            docker-compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml pull
 
             # Restart services
             # Remove orphans to clean up
-            docker-compose -f docker-compose.prod.yml up -d --remove-orphans
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
             # Prune old images to save space
             docker image prune -f
