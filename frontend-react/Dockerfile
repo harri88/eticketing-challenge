@@ -11,6 +11,10 @@ COPY . .
 
 # Pass environment variable during build
 ARG REACT_APP_API_URL
+# Debug: check if var is set
+RUN echo "DEBUG: REACT_APP_API_URL is '${REACT_APP_API_URL}'"
+RUN if [ -z "$REACT_APP_API_URL" ]; then echo "ERROR: REACT_APP_API_URL is missing"; exit 1; fi
+
 ENV REACT_APP_API_URL=$REACT_APP_API_URL
 
 RUN echo "Building with REACT_APP_API_URL=${REACT_APP_API_URL}"
